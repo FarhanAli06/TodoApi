@@ -13,9 +13,9 @@ jobs:
 
     services:
       api:
-        image: krchome6645/todoapi-docker-image
+        image: farimalik265/todoapi-repository
         ports:
-          - 5017/tcp # Adjust the port if your API uses a different port
+          - 8080/tcp # Adjust the port if your API uses a different port
 
     steps:
       - uses: actions/checkout@v3
