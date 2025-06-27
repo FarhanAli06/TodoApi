@@ -1,4 +1,4 @@
-name: .NET CI
+﻿name: .NET CI
 
 on:
   push:
@@ -19,27 +19,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 1. FIRST Install required system dependencies
-      - name: Install prerequisites
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget
-
-      # 2. PROPERLY Install .NET 8 SDK (direct from Microsoft)
-      - name: Install .NET 8 SDK
+      # 1️⃣ Install .NET 9.0.12 explicitly (not using setup-dotnet)
+      - name: Install .NET 9 SDK
         run: |
           wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
           chmod +x ./dotnet-install.sh
-          ./dotnet-install.sh --version 8.0.301 --install-dir /usr/share/dotnet
+          ./dotnet-install.sh --version 9.0.12 --install-dir /usr/share/dotnet
           sudo ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
 
-      # 3. VERIFY Installation
+      # 2️⃣ Verify installation
       - name: Check .NET version
         run: |
           dotnet --list-sdks
           dotnet --version
 
-      # Rest of your workflow...
+      # 3️⃣ Restore & Build
       - name: Restore dependencies
         run: dotnet restore
 
