@@ -12,12 +12,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+       
+      - name: .NET Info
+        run: dotnet --info
 
       # Install .NET 8 SDK (Windows has latest versions)
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.0'
+            dotnet-version: '8.0.x'
 
       # Verify installation
       - name: Check .NET version
