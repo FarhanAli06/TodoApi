@@ -1,39 +1,31 @@
-﻿name: .NET CI
+﻿name: .NET Windows CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
-    services:
-      api:
-        image: farimalik265/todoapi-repository
-        ports:
-          - 8080:8080
+    runs-on: windows-latest  # Must use Windows for net8.0-windows
 
     steps:
       - uses: actions/checkout@v4
 
-      # 1️⃣ Install .NET 9.0.12 explicitly (not using setup-dotnet)
-      - name: Install .NET 8 SDK
-        run: |
-          wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
-          chmod +x ./dotnet-install.sh
-          ./dotnet-install.sh --version 9.0.12 --install-dir /usr/share/dotnet
-          sudo ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
+      # Install .NET 8 SDK (Windows has latest versions)
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
 
-      # 2️⃣ Verify installation
+      # Verify installation
       - name: Check .NET version
         run: |
           dotnet --list-sdks
           dotnet --version
 
-      # 3️⃣ Restore & Build
+      # Build steps
       - name: Restore dependencies
         run: dotnet restore
 
