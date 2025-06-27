@@ -33,7 +33,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
-            8.0.0
+            9.0.12
             # 7.0.x  # Uncomment if you need multi-version support
 
       - name: Verify .NET Version
