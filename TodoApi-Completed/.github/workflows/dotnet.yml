@@ -15,12 +15,21 @@ jobs:
       api:
         image: farimalik265/todoapi-repository
         ports:
-          - 8080/tcp # Adjust the port if your API uses a different port
+          - 8080:8080 # Adjust the port if your API uses a different port
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Log in to Docker Hub
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      - name: Log in to Docker Hub
+        run: |
+          echo "Attempting Docker login..."
+          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      
+          echo "Verifying login..."
+          docker system info | grep "Username: ${{ secrets.DOCKER_USERNAME }}" || (echo "Docker login verification failed"; exit 1)
+          echo "Docker login successful!"
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
@@ -31,5 +40,19 @@ jobs:
         run: dotnet build --no-restore
       - name: Test
         run: dotnet test --no-build --verbosity normal
+
+        # Optional: Add artifact upload for test results if needed
+      - name: Upload Test Results
+        if: always()  # Upload even if tests fail
+        uses: actions/upload-artifact@v4  # Using latest version
+        with:
+          name: test-results
+          path: |
+            **/TestResults/*.xml
+            **/TestResults/*.log
+
       - name: Clean up Docker login credentials
         run: docker logout
+
+
+
