@@ -8,27 +8,19 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest  # Must use Windows for net8.0-windows
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v4
-       
-      - name: .NET Info
-        run: dotnet --info
 
-      # Install .NET 8 SDK (Windows has latest versions)
-      - name: Setup .NET 8
+      - name: Setup .NET 8 SDK
         uses: actions/setup-dotnet@v4
         with:
-            dotnet-version: '8.0.x'
+          dotnet-version: '8.0.x'  # Use the latest .NET 8 patch version
 
-      # Verify installation
-      - name: Check .NET version
-        run: |
-          dotnet --list-sdks
-          dotnet --version
+      - name: Display .NET Info
+        run: dotnet --info
 
-      # Build steps
       - name: Restore dependencies
         run: dotnet restore
 
