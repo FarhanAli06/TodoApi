@@ -9,8 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      ACTIONS_STEP_DEBUG: true  # Debug mode enabled
 
     services:
       api:
@@ -20,25 +18,28 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
-      # Single Docker login step with verification
-      - name: Log in to Docker Hub
+
+      # 1. FIRST Install required system dependencies
+      - name: Install prerequisites
         run: |
-          echo "Attempting Docker login..."
-          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-          echo "Verified Docker credentials"
-          
-      # Explicit .NET 8.0 SDK installation
-      - name: Setup .NET 8 SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: |
-            9.0.12
-            # 7.0.x  # Uncomment if you need multi-version support
+          sudo apt-get update
+          sudo apt-get install -y wget
 
-      - name: Verify .NET Version
-        run: dotnet --version
+      # 2. PROPERLY Install .NET 8 SDK (direct from Microsoft)
+      - name: Install .NET 8 SDK
+        run: |
+          wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
+          chmod +x ./dotnet-install.sh
+          ./dotnet-install.sh --version 8.0.301 --install-dir /usr/share/dotnet
+          sudo ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
 
+      # 3. VERIFY Installation
+      - name: Check .NET version
+        run: |
+          dotnet --list-sdks
+          dotnet --version
+
+      # Rest of your workflow...
       - name: Restore dependencies
         run: dotnet restore
 
@@ -47,17 +48,3 @@ jobs:
 
       - name: Test
         run: dotnet test --no-build --verbosity normal
-
-      # Artifact upload (only if you have test results)
-      - name: Upload Test Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: |
-            **/TestResults/*.xml
-            **/TestResults/*.log
-          retention-days: 3  # Optional: Set artifact retention
-
-      - name: Clean up Docker
-        run: docker logout
