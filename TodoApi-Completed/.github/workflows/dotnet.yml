@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v4
 
       # 1️⃣ Install .NET 9.0.12 explicitly (not using setup-dotnet)
-      - name: Install .NET 9 SDK
+      - name: Install .NET 8 SDK
         run: |
           wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
           chmod +x ./dotnet-install.sh
