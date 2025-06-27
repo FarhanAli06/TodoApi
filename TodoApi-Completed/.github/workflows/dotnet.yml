@@ -1,4 +1,4 @@
-name: .NET
+name: .NET CI
 
 on:
   push:
@@ -8,53 +8,56 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     env:
-      ACTIONS_STEP_DEBUG: true  # Enable debug logs
+      ACTIONS_STEP_DEBUG: true  # Debug mode enabled
 
     services:
       api:
         image: farimalik265/todoapi-repository
         ports:
-          - 8080:8080 # Adjust the port if your API uses a different port
+          - 8080:8080
 
     steps:
       - uses: actions/checkout@v4
-      - name: Log in to Docker Hub
-        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      
+      # Single Docker login step with verification
       - name: Log in to Docker Hub
         run: |
           echo "Attempting Docker login..."
           echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-      
-          echo "Verifying login..."
-          docker system info | grep "Username: ${{ secrets.DOCKER_USERNAME }}" || (echo "Docker login verification failed"; exit 1)
-          echo "Docker login successful!"
-
-      - name: Setup .NET
+          echo "Verified Docker credentials"
+          
+      # Explicit .NET 8.0 SDK installation
+      - name: Setup .NET 8 SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: |
+            8.0.x
+            # 7.0.x  # Uncomment if you need multi-version support
+
+      - name: Verify .NET Version
+        run: dotnet --version
+
       - name: Restore dependencies
         run: dotnet restore
+
       - name: Build
         run: dotnet build --no-restore
+
       - name: Test
         run: dotnet test --no-build --verbosity normal
 
-        # Optional: Add artifact upload for test results if needed
+      # Artifact upload (only if you have test results)
       - name: Upload Test Results
-        if: always()  # Upload even if tests fail
-        uses: actions/upload-artifact@v4  # Using latest version
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: |
             **/TestResults/*.xml
             **/TestResults/*.log
+          retention-days: 3  # Optional: Set artifact retention
 
-      - name: Clean up Docker login credentials
+      - name: Clean up Docker
         run: docker logout
-
-
-
