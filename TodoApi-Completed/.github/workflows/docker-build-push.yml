@@ -19,6 +19,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 🔥 NEW: Install .NET 8.0 SDK (MUST match your Dockerfile)
+      - name: Setup .NET 8.0 SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.411'  # Exact version to avoid conflicts
+
+      # Verify SDK is installed
+      - name: Verify .NET SDK
+        run: dotnet --list-sdks
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -41,6 +51,3 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
-      # Optional: Add deployment steps here
-      # For example, SSH into your server and run the new container
