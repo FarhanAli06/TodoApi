@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include=".github\workflows\dotnet.yml" />
+    <None Include=".github\workflows\docker-build-push.yml" />
   </ItemGroup>
 
   <ItemGroup>
