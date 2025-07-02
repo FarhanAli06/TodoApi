@@ -9,7 +9,7 @@ on:
 env:
   REGISTRY: docker.io
   IMAGE_NAME: farimalik265/todoapi-repository:todoapi-repo
-  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAM }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
 jobs:
